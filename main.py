@@ -1,11 +1,12 @@
 import requests
 from bs4 import BeautifulSoup
 
-def get_game_info(game_id: int):
+
+def get_game_info(game_id):
 
     url = 'https://1xstavka.ru/LineFeed/GetGameZip'
     params = {
-        "game_id": str(game_id),
+        "game_id": game_id,
         'id': '151027435',
         'lng': 'ru',
         'cfview': '0',
@@ -43,7 +44,7 @@ def get_games(champ_info):
 
 def get_champ_info(champ):
     champ_info = dict()
-    champ_info['id'] = str(champ.get('href').split('/')[-1].split('-')[0])
+    champ_info['id'] = champ.get('href').split('/')[-1].split('-')[0]
     champ_info['games_count'] = str(champ.find('span', 'link-title__count').contents[0])
     champ_info['champ_name'] = str(champ.find('span', 'link-title__label').contents[0])
 
@@ -69,6 +70,8 @@ def main():
             game_info = get_game_info(game_id)
             print(game_info)
         break
+    # db = sqlite3.connect('database.db')
+
 
 
 if __name__ == '__main__':
