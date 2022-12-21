@@ -1,9 +1,27 @@
+import sqlite3
 import requests
 from bs4 import BeautifulSoup
+from datetime import datetime as dt
 
 
-def get_game_info(game_id):
+def upload_game_data(game_info):
+    # with sqlite3.connect("database.db") as conn:
+    #     c = conn.cursor()
+    #     c.execute(
+    #         '''
+    #         INSERT INTO coeffs (
+    #             game_id,
+    #             game_name,
+    #             game_description,
+    #             game_url,
+    #             game_image'''
+    #     )
+    #     c.execute()
 
+    print(dt.now())
+
+def get_game_data(game_id):
+    game_info = dict()
     url = 'https://1xstavka.ru/LineFeed/GetGameZip'
     params = {
         "game_id": game_id,
@@ -19,9 +37,7 @@ def get_game_info(game_id):
         'marketType': '1',
         'isNewBuilder': 'true'
     }
-    response = requests.get(url, params=params).json()['Value']
-    game_info = response['GE']
-    return game_info
+    return requests.get(url, params=params).json()['Value']
 
 
 def get_games(champ_info):
@@ -67,11 +83,9 @@ def main():
         champ_info = get_champ_info(champ)
         for game in get_games(champ_info):
             game_id = game['CI']
-            game_info = get_game_info(game_id)
-            print(game_info)
+            game_data = get_game_data(game_id)
+            upload_game_data(game_data)
         break
-    # db = sqlite3.connect('database.db')
-
 
 
 if __name__ == '__main__':
