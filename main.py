@@ -130,7 +130,9 @@ def main():
     # Футбол
     while True:
         start_time = dt.now()
-        for champ in get_champs():  # Перебираем список
+        champs = get_champs()
+        for champ in champs:  # Перебираем список
+            start_champ_time = dt.now()
             # 1-й уровень
             print("=" * 100)
             champ_info = get_champ_info(champ)
@@ -139,7 +141,6 @@ def main():
             ))
             games = get_games(champ_info)
             print("Загружаю {} игр".format(len(games)))
-            print("Ждёмс................................")
             for game in games:
                 game_id = game['CI']
                 game_data = get_game_data(game_id)
@@ -189,7 +190,7 @@ def main():
             end_champ_time = dt.now()
             print("Чемпионат {} загружен за {} секунд".format(
                 champ_info['champ_name'],
-                (end_champ_time - start_time).total_seconds()
+                (end_champ_time - start_champ_time).total_seconds()
             ))
         end_time = dt.now()
         total_seconds = (end_time - start_time).total_seconds()
