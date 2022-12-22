@@ -1,23 +1,28 @@
 import sqlite3
 import requests
+from time import sleep
 from bs4 import BeautifulSoup
 from contextlib import closing
 from sql_code import create_events, create_coeffs, insert_events
-# from datetime import datetime as dt
+from datetime import datetime as dt
 
 
-def upload_game_data(game_info):
-    with sqlite3.connect("database.db") as conn:
-        c = conn.cursor()
-        c.execute(
-            '''
-            INSERT INTO coeffs (
-                game_id,
-                game_name,
-                game_description,
-                game_url,
-                game_image'''
-        )
+def inserting_coeffs(values):
+    with closing(sqlite3.connect("database.db")) as con:
+        with closing(con.cursor()) as c:
+            columns = ['game_id',
+                       'time',
+                       'cntry_nm',
+                       'league_id',
+                       'league_nm',
+                       'sport_nm',
+                       'opponent_a',
+                       'opponent_b',
+                       'event_id',
+                       'coeff']
+            sql = f'INSERT INTO game_coeffs ({", ".join(columns)}) VALUES ({", ".join("?"*len(columns))})'
+            c.executemany(sql, values)
+            con.commit()
 
 
 def get_game_data(game_id):
@@ -26,7 +31,6 @@ def get_game_data(game_id):
     :param game_id: id игры
     :return: возвращает json c данными по конкретной игре
     """
-    game_info = dict()
     url = 'https://1xstavka.ru/LineFeed/GetGameZip'
     params = {
         "game_id": game_id,
@@ -103,38 +107,96 @@ def get_champs():
 
 def create_tables():
     """
-    TODO страшно ли? если существуют данные, программа
-    TODO повторно будет пытать создать существующие таблицы
-
     Создаёт таблицы events, coeffs
+    Добавляет данные в events. Для изменения
+    нужно поправить sql-код
     :return:
     """
-    with closing(sqlite3.connect("database.db")) as connection:
-        with closing(connection.cursor()) as cursor:
+    with closing(sqlite3.connect("database.db")) as con:
+        with closing(con.cursor()) as c:
             sql = create_events()
-            cursor.execute(sql)
+            c.execute(sql)
             sql = create_coeffs()
-            cursor.execute(sql)
-            cursor.execute('SELECT event_id FROM events LIMIT 1')
-            if cursor.fetchone() is None:
+            c.execute(sql)
+            c.execute('SELECT event_id FROM events LIMIT 1')
+            if c.fetchone() is None:
                 sql = insert_events()
-                cursor.execute(sql)
-                connection.commit()
+                c.execute(sql)
+                con.commit()
 
 
 def main():
     create_tables()
     # Футбол
-    for champ in get_champs():  # Перебираем список
-        # 1-й уровень
-        print("=" * 100)
-        champ_info = get_champ_info(champ)
-        for game in get_games(champ_info):
-            game_id = game['CI']
-            game_data = get_game_data(game_id)
-            print(game_data)
-            # upload_game_data(game_data)
-        break
+    while True:
+        start_time = dt.now()
+        for champ in get_champs():  # Перебираем список
+            # 1-й уровень
+            print("=" * 100)
+            champ_info = get_champ_info(champ)
+            print("{} загружается".format(
+                champ_info['champ_name']
+            ))
+            games = get_games(champ_info)
+            print("Загружаю {} игр".format(len(games)))
+            print("Ждёмс................................")
+            for game in games:
+                game_id = game['CI']
+                game_data = get_game_data(game_id)
+                # Резализация логики парсинга кэфов
+                coeffs = game_data['GE']
+                # Получили все кэфы
+                # Смотрим событие 1х2
+                winner = coeffs[0]['E']
+                event_ids = [1, 2, 3]
+                values = list()
+                for x in range(3):
+                    value = (game_id,
+                             dt.now().strftime('%Y-%m-%d %H:%M:%S.%f')[:-3],
+                             game_data['CN'],
+                             game_data['LI'],
+                             game_data['L'],
+                             game_data['SN'],
+                             game_data['O1'],
+                             game_data['O2'],
+                             event_ids[x],
+                             winner[x][0]['C']
+                             )
+                    values.append(value)
+                values = (*values, )
+                inserting_coeffs(values)
+                # Смотрим Двойной шанс
+                double_chanse = coeffs[1]['E']
+                event_ids = [4, 5, 6]
+                values = list()
+                for x in range(3):
+                    value = (game_id,
+                             dt.now().strftime('%Y-%m-%d %H:%M:%S.%f')[:-3],
+                             game_data['CN'],
+                             game_data['LI'],
+                             game_data['L'],
+                             game_data['SN'],
+                             game_data['O1'],
+                             game_data['O2'],
+                             event_ids[x],
+                             double_chanse[x][0]['C']
+                             )
+                    values.append(value)
+                values = (*values, )
+                inserting_coeffs(values)
+                # total = coeffs[3]['E']
+                # fora = coeffs[5]['E']
+            end_champ_time = dt.now()
+            print("Чемпионат {} загружен за {} секунд".format(
+                champ_info['champ_name'],
+                (end_champ_time - start_time).total_seconds()
+            ))
+        end_time = dt.now()
+        total_seconds = (end_time - start_time).total_seconds()
+        if total_seconds > 60:
+            continue
+        else:
+            sleep(60-total_seconds)
 
 
 if __name__ == '__main__':
