@@ -2,7 +2,7 @@ import sqlite3
 import requests
 from bs4 import BeautifulSoup
 from contextlib import closing
-from sql_code import create_events, create_coeffs
+from sql_code import create_events, create_coeffs, insert_events
 # from datetime import datetime as dt
 
 
@@ -115,6 +115,11 @@ def create_tables():
             cursor.execute(sql)
             sql = create_coeffs()
             cursor.execute(sql)
+            cursor.execute('SELECT event_id FROM events LIMIT 1')
+            if cursor.fetchone() is None:
+                sql = insert_events()
+                cursor.execute(sql)
+                connection.commit()
 
 
 def main():
