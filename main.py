@@ -49,7 +49,7 @@ def get_game_data(game_id):
     return requests.get(url, params=params).json()['Value']
 
 
-def get_games(champ_info):
+def get_games(champ_id):
     """
     Метод отправляет запрос, используя id чемпионата,
     и полдучает в ответ данные чемпионата.
@@ -61,7 +61,7 @@ def get_games(champ_info):
     url = 'https://1xstavka.ru/LineFeed/Get1x2_VZip'
     params = {
         'sports': '1',
-        'champs': champ_info['id'],
+        'champs': champ_id,
         'count': '300',
         'tf': '2200000',
         'tz': '3',
@@ -139,10 +139,12 @@ def main():
             print("{} загружается".format(
                 champ_info['champ_name']
             ))
-            games = get_games(champ_info)
+            games = get_games(champ_info['id'])
+            print(champ_info['id'])
             print("Загружаю {} игр".format(len(games)))
             for game in games:
-                game_id = game['CI']
+                game_id = game['I']
+                print(game_id)
                 game_data = get_game_data(game_id)
                 # Резализация логики парсинга кэфов
                 coeffs = game_data['GE']
@@ -164,6 +166,7 @@ def main():
                              winner[x][0]['C']
                              )
                     values.append(value)
+                    print(value)
                 values = (*values, )
                 inserting_coeffs(values)
                 # Смотрим Двойной шанс
@@ -183,6 +186,7 @@ def main():
                              double_chanse[x][0]['C']
                              )
                     values.append(value)
+                    print(value)
                 values = (*values, )
                 inserting_coeffs(values)
                 # total = coeffs[3]['E']
@@ -192,6 +196,7 @@ def main():
                 champ_info['champ_name'],
                 (end_champ_time - start_champ_time).total_seconds()
             ))
+        break
         end_time = dt.now()
         total_seconds = (end_time - start_time).total_seconds()
         if total_seconds > 60:
