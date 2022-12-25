@@ -33,8 +33,7 @@ def get_game_data(game_id):
     """
     url = 'https://1xstavka.ru/LineFeed/GetGameZip'
     params = {
-        "game_id": game_id,
-        'id': '151027435',
+        'id': game_id,
         'lng': 'ru',
         'cfview': '0',
         'isSubGames': 'false',
@@ -53,8 +52,6 @@ def get_games(champ_id):
     """
     Метод отправляет запрос, используя id чемпионата,
     и полдучает в ответ данные чемпионата.
-
-    :param champ_info: словарь с данными по чемпионату
     :return: возвращает json c данными. Данные содержат id
     всех игр внутри конкретного чемпионата.
     """
@@ -196,7 +193,7 @@ def main():
                 champ_info['champ_name'],
                 (end_champ_time - start_champ_time).total_seconds()
             ))
-        break
+            break
         end_time = dt.now()
         total_seconds = (end_time - start_time).total_seconds()
         if total_seconds > 60:
