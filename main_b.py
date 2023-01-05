@@ -41,24 +41,6 @@ def get_coeffs(indxs, game):
     return values
 
 
-def inserting_coeffs(values):
-    with closing(sqlite3.connect("database.db")) as con:
-        with closing(con.cursor()) as c:
-            columns = ['game_id',
-                       'time',
-                       'cntry_nm',
-                       'league_id',
-                       'league_nm',
-                       'sport_nm',
-                       'opponent_a',
-                       'opponent_b',
-                       'event_id',
-                       'coeff']
-            sql = f'INSERT INTO game_coeffs ({", ".join(columns)}) VALUES ({", ".join("?"*len(columns))})'
-            c.executemany(sql, values)
-            con.commit()
-
-
 def get_game_info(game_id, champ_id):
     """
         Метод отправляет запрос, используя id игры, и получает в ответ
@@ -137,29 +119,22 @@ def main():
         start_time = dt.now()
         for champ_link in f:
             print('старт обхода')
-            start_champ_time = dt.now()
             champ_id = champ_link.split('/')[-1].split('-')[0]
-            print(champ_id)
             champ_games = get_games(champ_id)
             for game in champ_games:
-                print(game['O1'], ' - ', game['O2'])
-                # Резализация логики парсинга кэфов
-                # Получили все кэфы
-                events_result = list()
+                print(game['LI'], game['L'])
+                print(game['O1'], ' - ', game['O2'])  # Печатаем названия команд
+                events_result = list()  # Все новые строки в базу
                 events_result += get_coeffs([0, 1, 2], game)  # Смотрим событие 1х2
                 events_result += get_coeffs([3, 4, 5], game)  # Смотрим Двойной шанс
                 events_result = (*events_result,)
-
-                inserting_coeffs(events_result)
+                # inserting_coeffs(events_result)
                 for value in events_result:
                     print(value)
-            end_champ_time = dt.now()
-            total_seconds = (end_champ_time - start_champ_time).total_seconds()
-            print(total_seconds)
-            break
+
         end_time = dt.now()
         total_seconds = (end_time - start_time).total_seconds()
-        print(total_seconds, ' секунд')
+        print(total_seconds, 'секунд потрачено на чемпионат')
 
 
 if __name__ == "__main__":
