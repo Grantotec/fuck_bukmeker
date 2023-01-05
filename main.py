@@ -45,6 +45,7 @@ def get_game_data(game_id):
         'marketType': '1',
         'isNewBuilder': 'true'
     }
+    # https://1xstavka.ru/LineFeed/GetGameZip?id=411889929&lng=ru&cfview=0&isSubGames=false&GroupEvents=true&allEventsGroupSubGames=true&countevents=250&partner51grMode=2&marketType=1&isNewBuilder=true
     return requests.get(url, params=params).json()['Value']
 
 
@@ -68,7 +69,7 @@ def get_games(champ_id):
         'partner': '51',
         'getEmpty': 'true'
     }
-
+    # https://1xstavka.ru/LineFeed/Get1x2_VZip?sports=1&champs=33&count=10&tf=2200000&tz=3&antisports=188&mode=4&country=1&partner=51&getEmpty=true
     return requests.get(url, params=params).json()['Value']
 
 
@@ -85,6 +86,10 @@ def get_champ_info(champ):
     champ_info['games_count'] = str(champ.find('span', 'link-title__count').contents[0])
     champ_info['champ_name'] = str(champ.find('span', 'link-title__label').contents[0])
 
+    if champ_info['champ_name'] in ['Специальные ставки игрового дня',
+                                    'Лига Чемпионов УЕФА. Статистика раунда плей-офф'
+                                    ]:
+        return None
     return champ_info
 
 
@@ -126,23 +131,27 @@ def main():
     create_tables()
     # Футбол
     while True:
+        print('старт обхода')
         start_time = dt.now()
         champs = get_champs()
         for champ in champs:  # Перебираем список
             start_champ_time = dt.now()
             # 1-й уровень
-            print("=" * 100)
+
             champ_info = get_champ_info(champ)
-            print("{} загружается".format(
-                champ_info['champ_name']
+            if not champ_info:
+                continue
+            print("{} загружается, id: {}".format(
+                champ_info['champ_name'],
+                champ_info['id']
             ))
+            print("=" * 100)
             games = get_games(champ_info['id'])
-            print(champ_info['id'])
             print("Загружаю {} игр".format(len(games)))
             for game in games:
-                game_id = game['I']
-                print(game_id)
+                game_id = game['CI']
                 game_data = get_game_data(game_id)
+                print(game_data['O1'], ' - ', game_data['O2'])
                 # Резализация логики парсинга кэфов
                 coeffs = game_data['GE']
                 # Получили все кэфы
@@ -193,6 +202,7 @@ def main():
                 champ_info['champ_name'],
                 (end_champ_time - start_champ_time).total_seconds()
             ))
+            print("=" * 100)
             break
         end_time = dt.now()
         total_seconds = (end_time - start_time).total_seconds()
@@ -200,6 +210,7 @@ def main():
             continue
         else:
             sleep(60-total_seconds)
+
 
 
 if __name__ == '__main__':
