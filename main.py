@@ -1,7 +1,5 @@
 import sqlite3
 import requests
-from time import sleep
-from bs4 import BeautifulSoup
 from contextlib import closing
 from sql_code import create_events, create_coeffs, insert_events
 from datetime import datetime as dt
@@ -25,94 +23,82 @@ def inserting_coeffs(values):
             con.commit()
 
 
-def get_game_data(game_id):
+def get_coeffs(indxs, game):
+    values = list()
+    for x in indxs:
+        value = (game['CI'],
+                 dt.now().strftime('%Y-%m-%d %H:%M:%S.%f')[:-3],
+                 game['CN'],
+                 game['LI'],
+                 game['L'],
+                 game['SN'],
+                 game['O1'],
+                 game['O2'],
+                 x + 1,
+                 game['E'][x]['C']
+                 )
+        values.append(value)
+    return values
+
+
+def get_game_info(game_id):
     """
-    Метод отправляет запрос, используя id игры, и получает в ответ
-    :param game_id: id игры
-    :return: возвращает json c данными по конкретной игре
+        Метод отправляет запрос, используя id игры, и получает в ответ
+        :param game_id: id игры
+        :return: возвращает json c данными по конкретной игре
+
+        https://1xstavka.ru/LineFeed/GetGameZip?id=156129205&lng=ru&cfview=0&isSubGames=tru&GroupEvents=true&
+        allEventsGroupSubGames=true&countevents=250&partner=51&grMode=2&marketType=1&isNewBuilder=true
     """
     url = 'https://1xstavka.ru/LineFeed/GetGameZip'
     params = {
         'id': game_id,
         'lng': 'ru',
         'cfview': '0',
-        'isSubGames': 'false',
+        'isSubGames': 'true',
         'GroupEvents': 'true',
         'allEventsGroupSubGames': 'true',
-        'countevents': '250',
+        'countevents': '1000',
         'partner': '51',
         'grMode': '2',
         'marketType': '1',
         'isNewBuilder': 'true'
     }
-    # https://1xstavka.ru/LineFeed/GetGameZip?id=411889929&lng=ru&cfview=0&isSubGames=false&GroupEvents=true&allEventsGroupSubGames=true&countevents=250&partner51grMode=2&marketType=1&isNewBuilder=true
     return requests.get(url, params=params).json()['Value']
 
 
 def get_games(champ_id):
     """
-    Метод отправляет запрос, используя id чемпионата,
-    и полдучает в ответ данные чемпионата.
-    :return: возвращает json c данными. Данные содержат id
-    всех игр внутри конкретного чемпионата.
+    Метод отправляет запрос, используя id чемпионата, и получает в ответ данные
+    чемпионата.
+    :return: возвращает json c данными. Данные содержат id всех игр внутри
+    конкретного чемпионата.
+
+    URL
+    https://1xstavka.ru/LineFeed/Get1x2_VZip?sports=1&champs=33&count=10&tf=2200000&tz=3&antisports=188&mode=4&
+    country=1&partner=51&getEmpty=true
     """
     url = 'https://1xstavka.ru/LineFeed/Get1x2_VZip'
     params = {
         'sports': '1',
         'champs': champ_id,
-        'count': '300',
+        'count': '50',
         'tf': '2200000',
-        'tz': '3',
         'antisports': '188',
         'mode': '4',
         'country': '1',
         'partner': '51',
         'getEmpty': 'true'
     }
-    # https://1xstavka.ru/LineFeed/Get1x2_VZip?sports=1&champs=33&count=10&tf=2200000&tz=3&antisports=188&mode=4&country=1&partner=51&getEmpty=true
     return requests.get(url, params=params).json()['Value']
-
-
-def get_champ_info(champ):
-    """
-    Метод собирает данные по чемпионату. id нам понадобится
-    для дальнейшего получения данных по играм.
-
-    :param champ: Чемпионат
-    :return: Возвращает словарь с данными по чемпионату
-    """
-    champ_info = dict()
-    champ_info['id'] = champ.get('href').split('/')[-1].split('-')[0]
-    champ_info['games_count'] = str(champ.find('span', 'link-title__count').contents[0])
-    champ_info['champ_name'] = str(champ.find('span', 'link-title__label').contents[0])
-
-    if champ_info['champ_name'] in ['Специальные ставки игрового дня',
-                                    'Лига Чемпионов УЕФА. Статистика раунда плей-офф'
-                                    ]:
-        return None
-    return champ_info
-
-
-def get_champs():
-    """
-    При итерировании по этому методу перебираются
-    чемпионаты внутри футбола.
-
-    :return: Возвращает список чемпионатов
-    """
-    page = requests.get('https://1xstavka.ru/line/football')
-    soup = BeautifulSoup(page.text, 'html.parser')
-    champs = soup.find_all('a', ['link link--labled'])
-
-    return champs
 
 
 def create_tables():
     """
     Создаёт таблицы events, coeffs
     Добавляет данные в events. Для изменения
-    нужно поправить sql-код
-    :return:
+    нужно поправить sql-code.py
+    :return: None
     """
     with closing(sqlite3.connect("database.db")) as con:
         with closing(con.cursor()) as c:
@@ -129,89 +115,25 @@ def create_tables():
 
 def main():
     create_tables()
-    # Футбол
-    while True:
-        print('старт обхода')
+    print('старт обхода')
+    with open('champs.txt') as f:
         start_time = dt.now()
-        champs = get_champs()
-        for champ in champs:  # Перебираем список
-            start_champ_time = dt.now()
-            # 1-й уровень
-
-            champ_info = get_champ_info(champ)
-            if not champ_info:
-                continue
-            print("{} загружается, id: {}".format(
-                champ_info['champ_name'],
-                champ_info['id']
-            ))
-            print("=" * 100)
-            games = get_games(champ_info['id'])
-            print("Загружаю {} игр".format(len(games)))
-            for game in games:
+        for champ_link in f:
+            print('=' * 300)
+            print('старт чемпионата')
+            champ_id = champ_link.split('/')[-1].split('-')[0]
+            champ_games = get_games(champ_id)
+            for game in champ_games:
                 game_id = game['CI']
-                game_data = get_game_data(game_id)
-                print(game_data['O1'], ' - ', game_data['O2'])
-                # Резализация логики парсинга кэфов
-                coeffs = game_data['GE']
-                # Получили все кэфы
-                # Смотрим событие 1х2
-                winner = coeffs[0]['E']
-                event_ids = [1, 2, 3]
-                values = list()
-                for x in range(3):
-                    value = (game_id,
-                             dt.now().strftime('%Y-%m-%d %H:%M:%S.%f')[:-3],
-                             game_data['CN'],
-                             game_data['LI'],
-                             game_data['L'],
-                             game_data['SN'],
-                             game_data['O1'],
-                             game_data['O2'],
-                             event_ids[x],
-                             winner[x][0]['C']
-                             )
-                    values.append(value)
-                    print(value)
-                values = (*values, )
-                inserting_coeffs(values)
-                # Смотрим Двойной шанс
-                double_chanse = coeffs[1]['E']
-                event_ids = [4, 5, 6]
-                values = list()
-                for x in range(3):
-                    value = (game_id,
-                             dt.now().strftime('%Y-%m-%d %H:%M:%S.%f')[:-3],
-                             game_data['CN'],
-                             game_data['LI'],
-                             game_data['L'],
-                             game_data['SN'],
-                             game_data['O1'],
-                             game_data['O2'],
-                             event_ids[x],
-                             double_chanse[x][0]['C']
-                             )
-                    values.append(value)
-                    print(value)
-                values = (*values, )
-                inserting_coeffs(values)
-                # total = coeffs[3]['E']
-                # fora = coeffs[5]['E']
-            end_champ_time = dt.now()
-            print("Чемпионат {} загружен за {} секунд".format(
-                champ_info['champ_name'],
-                (end_champ_time - start_champ_time).total_seconds()
-            ))
-            print("=" * 100)
-            break
+                print(game['LI'], game['L'])
+                print(game['O1'], ' - ', game['O2'], '   ', game_id)  # Печатаем названия команд
+                game_info = get_game_info(game_id)
+                print(game_info)
+
         end_time = dt.now()
         total_seconds = (end_time - start_time).total_seconds()
-        if total_seconds > 60:
-            continue
-        else:
-            sleep(60-total_seconds)
+        print(total_seconds, 'секунд потрачено на чемпионат')
 
 
-
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

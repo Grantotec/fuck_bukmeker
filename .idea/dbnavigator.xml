@@ -13,7 +13,16 @@
   </component>
   <component name="DBNavigator.Project.DatabaseConsoleManager">
     <connection id="a8103733-4a47-4756-97da-34aa473ac5ce">
-      <console name="Connection 1" type="STANDARD" schema="main" session="Main"><![CDATA[select * from events]]></console>
+      <console name="Connection 1" type="STANDARD" schema="main" session="Main"><![CDATA[select *
+from game_coeffs c
+    inner join events e
+    on e.event_id=c.event_id
+where 1=1
+    and e.event_nm='1x2'
+    and c.league_nm='Чемпионат Англии. Премьер-лига'
+    and e.event_vl='x'
+    and c.opponent_a='Челси'
+    and c.opponent_b='Манчестер Сити']]></console>
     </connection>
   </component>
   <component name="DBNavigator.Project.DatabaseEditorStateManager">
@@ -246,7 +255,7 @@
         <data-length-threshold value="250" />
       </values-actions-popup>
       <general>
-        <fetch-block-size value="100" />
+        <fetch-block-size value="1000" />
         <fetch-timeout value="30" />
         <trim-whitespaces value="true" />
         <convert-empty-strings-to-null value="true" />
