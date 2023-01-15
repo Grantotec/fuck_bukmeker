@@ -187,8 +187,14 @@ def main():
                     print(game['LI'], game['L'])
                     print(game['O1'], ' - ', game['O2'], '   ', game_id)  # Печатаем названия команд
                     game_info = get_game_info(game_id)
-                    rows += get_isxod(game_info)
-                    rows += get_dvoynoy_shans(game_info)
+                    try:
+                        rows += get_isxod(game_info)
+                    except:
+                        print('НЕ ПОЛУЧИЛОСЬ ВЫТАЩИТЬ ИСХОД')
+                    try:
+                        rows += get_dvoynoy_shans(game_info)
+                    except:
+                        print('НЕ ПОЛУЧИЛОСЬ ВЫТАЩИТЬ ДВОЙНОЙ ШАНС')
                     # rows += get_total(game_info)
                     # rows += get_fora(game_info)
                     inserting_coeffs(set(rows))
@@ -200,7 +206,7 @@ def main():
         total_seconds = (end_time - start_time).total_seconds()
         print(total_seconds, 'секунд потрачено на чемпионат')
         if total_seconds < 60:
-            time.sleep(60-total_seconds)
+            time.sleep(round(60-total_seconds))
 
 
 if __name__ == "__main__":
