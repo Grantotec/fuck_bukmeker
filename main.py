@@ -1,4 +1,5 @@
 import sqlite3
+import time
 import requests
 from contextlib import closing
 from sql_code import create_events, create_coeffs, insert_events
@@ -170,33 +171,36 @@ def create_tables():
 def main():
     create_tables()
     print('старт обхода')
-    with open('champs.txt') as f:
+    while True:
         start_time = dt.now()
-        for champ_link in f:
-            print('=' * 200)
-            print('старт чемпионата')
-            champ_id = champ_link.split('/')[-1].split('-')[0]
-            champ_games = get_games(champ_id)
-            for game in champ_games:
-                if 'Хозяева' in game['O1'] or 'Гости' in game['O2']:
-                    continue
-                rows = list()
-                game_id = game['CI']
-                print(game['LI'], game['L'])
-                print(game['O1'], ' - ', game['O2'], '   ', game_id)  # Печатаем названия команд
-                game_info = get_game_info(game_id)
-                rows += get_isxod(game_info)
-                rows += get_dvoynoy_shans(game_info)
-                # rows += get_total(game_info)
-                # rows += get_fora(game_info)
-                # inserting_coeffs(set(rows))
-                for row in rows:
-                    print(row)
+        with open('champs.txt') as f:
+            for champ_link in f:
+                print('=' * 200)
+                print('старт чемпионата')
+                champ_id = champ_link.split('/')[-1].split('-')[0]
+                champ_games = get_games(champ_id)
+                for game in champ_games:
+                    if 'Хозяева' in game['O1'] or 'Гости' in game['O2']:
+                        continue
+                    rows = list()
+                    game_id = game['CI']
+                    print(game['LI'], game['L'])
+                    print(game['O1'], ' - ', game['O2'], '   ', game_id)  # Печатаем названия команд
+                    game_info = get_game_info(game_id)
+                    rows += get_isxod(game_info)
+                    rows += get_dvoynoy_shans(game_info)
+                    # rows += get_total(game_info)
+                    # rows += get_fora(game_info)
+                    inserting_coeffs(set(rows))
+                    for row in rows:
+                        print(row)
 
         # Подсчитываем время обхода чемпионатов
         end_time = dt.now()
         total_seconds = (end_time - start_time).total_seconds()
         print(total_seconds, 'секунд потрачено на чемпионат')
+        if total_seconds < 60:
+            time.sleep(60-total_seconds)
 
 
 if __name__ == "__main__":
