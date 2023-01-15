@@ -178,6 +178,8 @@ def main():
             champ_id = champ_link.split('/')[-1].split('-')[0]
             champ_games = get_games(champ_id)
             for game in champ_games:
+                if 'Хозяева' in game['O1'] or 'Гости' in game['O2']:
+                    continue
                 rows = list()
                 game_id = game['CI']
                 print(game['LI'], game['L'])
@@ -185,8 +187,8 @@ def main():
                 game_info = get_game_info(game_id)
                 rows += get_isxod(game_info)
                 rows += get_dvoynoy_shans(game_info)
-                rows += get_total(game_info)
-                rows += get_fora(game_info)
+                # rows += get_total(game_info)
+                # rows += get_fora(game_info)
                 # inserting_coeffs(set(rows))
                 for row in rows:
                     print(row)
