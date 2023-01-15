@@ -23,9 +23,63 @@ def inserting_coeffs(values):
             con.commit()
 
 
-def get_coeffs(indxs, game):
+def get_fora(game):
+    """
+    TODO дописать функцию
+    Из данных по игре метод выделяет коэффициенты на группу событий Фора.
+    Возвращает список уже готовых к заливке строк.
+    :param game: Данные игры
+    :return: Список строк для заливки
+    """
+    pass
+
+
+def get_total(game):
+    """
+    TODO дописать функцию
+    Из данных по игре метод выделяет коэффициенты на группу событий Тотал.
+    Возвращает список уже готовых к заливке строк.
+    :param game: Данные игры
+    :return: Список строк для заливки
+    """
+    pass
+
+
+def get_dvoynoy_shans(game):
+    """
+    Из данных по игре метод выделяет коэффициенты на группу событий Двойной шанс.
+    Возвращает список уже готовых к заливке строк.
+    :param game: Данные игры
+    :return: Список строк для заливки
+    """
     values = list()
-    for x in indxs:
+    coeffs = game['GE'][1]['E']
+    for x in range(3):
+        value = (game['CI'],
+                 dt.now().strftime('%Y-%m-%d %H:%M:%S.%f')[:-3],
+                 game['CN'],
+                 game['LI'],
+                 game['L'],
+                 game['SN'],
+                 game['O1'],
+                 game['O2'],
+                 x + 4,
+                 coeffs[x][0]['C']
+                 )
+        values.append(value)
+    return values
+
+
+def get_isxod(game):
+    """
+    Из данных по игре метод выделяет коэффициенты на группу событий Исход.
+    Возвращает список уже готовых к заливке строк.
+    :param game: Данные игры
+    :return: Список строк для заливки
+    """
+    values = list()
+    coeffs = game['GE'][0]['E']
+    for x in range(3):
         value = (game['CI'],
                  dt.now().strftime('%Y-%m-%d %H:%M:%S.%f')[:-3],
                  game['CN'],
@@ -35,7 +89,7 @@ def get_coeffs(indxs, game):
                  game['O1'],
                  game['O2'],
                  x + 1,
-                 game['E'][x]['C']
+                 coeffs[x][0]['C']
                  )
         values.append(value)
     return values
@@ -119,17 +173,25 @@ def main():
     with open('champs.txt') as f:
         start_time = dt.now()
         for champ_link in f:
-            print('=' * 300)
+            print('=' * 200)
             print('старт чемпионата')
             champ_id = champ_link.split('/')[-1].split('-')[0]
             champ_games = get_games(champ_id)
             for game in champ_games:
+                rows = list()
                 game_id = game['CI']
                 print(game['LI'], game['L'])
                 print(game['O1'], ' - ', game['O2'], '   ', game_id)  # Печатаем названия команд
                 game_info = get_game_info(game_id)
-                print(game_info)
+                rows += get_isxod(game_info)
+                rows += get_dvoynoy_shans(game_info)
+                rows += get_total(game_info)
+                rows += get_fora(game_info)
+                # inserting_coeffs(set(rows))
+                for row in rows:
+                    print(row)
 
+        # Подсчитываем время обхода чемпионатов
         end_time = dt.now()
         total_seconds = (end_time - start_time).total_seconds()
         print(total_seconds, 'секунд потрачено на чемпионат')
