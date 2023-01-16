@@ -205,8 +205,8 @@ def main():
         end_time = dt.now()
         total_seconds = (end_time - start_time).total_seconds()
         print(total_seconds, 'секунд потрачено на чемпионат')
-        if total_seconds < 60:
-            time.sleep(round(60-total_seconds))
+        if total_seconds < 360:
+            time.sleep(round(360-total_seconds))
 
 
 if __name__ == "__main__":
