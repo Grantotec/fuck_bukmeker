@@ -218,8 +218,8 @@ def main():
                     except:
                         print('Не полуилось вставить коэффициенты а базу')
 
-                    for row in rows:
-                        print(row)
+                    # for row in rows:
+                    #     print(row)
 
         # Подсчитываем время обхода чемпионатов
         end_time = dt.now()
