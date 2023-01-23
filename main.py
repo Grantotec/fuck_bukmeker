@@ -19,7 +19,7 @@ def inserting_coeffs(values):
                        'opponent_b',
                        'event_id',
                        'coeff']
-            sql = f'INSERT INTO game_coeffs ({", ".join(columns)}) VALUES ({", ".join("?"*len(columns))})'
+            sql = f'INSERT INTO game_coeffs ({", ".join(columns)}) VALUES ({", ".join("?" * len(columns))})'
             c.executemany(sql, values)
             con.commit()
 
@@ -174,11 +174,18 @@ def main():
     while True:
         start_time = dt.now()
         with open('champs.txt') as f:
+            # Начинаем обход турниров
             for champ_link in f:
                 print('=' * 200)
                 print('старт чемпионата')
                 champ_id = champ_link.split('/')[-1].split('-')[0]
-                champ_games = get_games(champ_id)
+                # Пробуем достать турнир
+                try:
+                    champ_games = get_games(champ_id)
+                except:
+                    print('Не получилось достать турнир')
+                    continue
+                # Обход игра внутри турнира
                 for game in champ_games:
                     if 'Хозяева' in game['O1'] or 'Гости' in game['O2']:
                         continue
@@ -186,18 +193,31 @@ def main():
                     game_id = game['CI']
                     print(game['LI'], game['L'])
                     print(game['O1'], ' - ', game['O2'], '   ', game_id)  # Печатаем названия команд
-                    game_info = get_game_info(game_id)
+                    # Пробуем достать игру
+                    try:
+                        game_info = get_game_info(game_id)
+                    except:
+                        print('Не получилось достать игру')
+                        continue
+                    # Пробуем достать Исход
                     try:
                         rows += get_isxod(game_info)
                     except:
                         print('НЕ ПОЛУЧИЛОСЬ ВЫТАЩИТЬ ИСХОД')
+                    # Пробуем достать Двойной шанс
                     try:
                         rows += get_dvoynoy_shans(game_info)
                     except:
                         print('НЕ ПОЛУЧИЛОСЬ ВЫТАЩИТЬ ДВОЙНОЙ ШАНС')
                     # rows += get_total(game_info)
                     # rows += get_fora(game_info)
-                    inserting_coeffs(set(rows))
+
+                    # Пробуем вставить полученные данные в базу
+                    try:
+                        inserting_coeffs(set(rows))
+                    except:
+                        print('Не полуилось вставить коэффициенты а базу')
+
                     for row in rows:
                         print(row)
 
@@ -206,7 +226,7 @@ def main():
         total_seconds = (end_time - start_time).total_seconds()
         print(total_seconds, 'секунд потрачено на чемпионат')
         if total_seconds < 360:
-            time.sleep(round(360-total_seconds))
+            time.sleep(round(360 - total_seconds))
 
 
 if __name__ == "__main__":
