@@ -199,34 +199,40 @@ def main():
                     except:
                         print('Не получилось достать игру')
                         continue
-                    # Пробуем достать Исход
-                    try:
-                        rows += get_isxod(game_info)
-                    except:
-                        print('НЕ ПОЛУЧИЛОСЬ ВЫТАЩИТЬ ИСХОД')
-                    # Пробуем достать Двойной шанс
-                    try:
-                        rows += get_dvoynoy_shans(game_info)
-                    except:
-                        print('НЕ ПОЛУЧИЛОСЬ ВЫТАЩИТЬ ДВОЙНОЙ ШАНС')
-                    # rows += get_total(game_info)
-                    # rows += get_fora(game_info)
+                    print(game_info)
+                    break
 
-                    # Пробуем вставить полученные данные в базу
-                    try:
-                        inserting_coeffs(set(rows))
-                    except:
-                        print('Не полуилось вставить коэффициенты а базу')
+                break
+            break
 
-                    # for row in rows:
-                    #     print(row)
-
-        # Подсчитываем время обхода чемпионатов
-        end_time = dt.now()
-        total_seconds = (end_time - start_time).total_seconds()
-        print(total_seconds, 'секунд потрачено на чемпионат')
-        if total_seconds < 360:
-            time.sleep(round(360 - total_seconds))
+        #             # Пробуем достать Исход
+        #             try:
+        #                 rows += get_isxod(game_info)
+        #             except:
+        #                 print('НЕ ПОЛУЧИЛОСЬ ВЫТАЩИТЬ ИСХОД')
+        #             # Пробуем достать Двойной шанс
+        #             try:
+        #                 rows += get_dvoynoy_shans(game_info)
+        #             except:
+        #                 print('НЕ ПОЛУЧИЛОСЬ ВЫТАЩИТЬ ДВОЙНОЙ ШАНС')
+        #             # rows += get_total(game_info)
+        #             # rows += get_fora(game_info)
+        #
+        #             # Пробуем вставить полученные данные в базу
+        #             try:
+        #                 inserting_coeffs(set(rows))
+        #             except:
+        #                 print('Не полуилось вставить коэффициенты а базу')
+        #
+        #             # for row in rows:
+        #             #     print(row)
+        #
+        # # Подсчитываем время обхода чемпионатов
+        # end_time = dt.now()
+        # total_seconds = (end_time - start_time).total_seconds()
+        # print(total_seconds, 'секунд потрачено на чемпионат')
+        # if total_seconds < 360:
+        #     time.sleep(round(360 - total_seconds))
 
 
 if __name__ == "__main__":
