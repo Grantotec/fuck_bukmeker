@@ -19,6 +19,7 @@ def create_coeffs():
       league_id INTEGER,
       league_nm TEXT,
       sport_nm TEXT,
+      tour INTEGER,
       opponent_a TEXT,
       opponent_b TEXT,
       event_id INTEGER NOT NULL,

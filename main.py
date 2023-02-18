@@ -43,7 +43,23 @@ def get_total(game):
     :param game: Данные игры
     :return: Список строк для заливки
     """
-    pass
+    values = list()
+    coeffs = game['GE'][3]['E']
+    for total in coeffs:
+        value = (game['CI'],
+                 dt.now().strftime('%Y-%m-%d %H:%M:%S.%f')[:-3],
+                 game['CN'],
+                 game['LI'],
+                 game['L'],
+                 game['SN'],
+                 int(game['MIS'][0]['V'].split(' ')[1]),
+                 game['O1'],
+                 game['O2'],
+                 x + 4,
+                 coeffs[x][0]['C']
+                 )
+        values.append(value)
+    return values
 
 
 def get_dvoynoy_shans(game):
@@ -62,6 +78,7 @@ def get_dvoynoy_shans(game):
                  game['LI'],
                  game['L'],
                  game['SN'],
+                 int(game['MIS'][0]['V'].split(' ')[1]),
                  game['O1'],
                  game['O2'],
                  x + 4,
@@ -87,6 +104,7 @@ def get_isxod(game):
                  game['LI'],
                  game['L'],
                  game['SN'],
+                 int(game['MIS'][0]['V'].split(' ')[1]),
                  game['O1'],
                  game['O2'],
                  x + 1,
@@ -199,40 +217,39 @@ def main():
                     except:
                         print('Не получилось достать игру')
                         continue
-                    print(game_info)
-                    break
 
-                break
-            break
+                    # Пробуем достать Исход
+                    try:
+                        rows += get_isxod(game_info)
+                    except:
+                        print('НЕ ПОЛУЧИЛОСЬ ВЫТАЩИТЬ ИСХОД')
+                        continue
 
-        #             # Пробуем достать Исход
-        #             try:
-        #                 rows += get_isxod(game_info)
-        #             except:
-        #                 print('НЕ ПОЛУЧИЛОСЬ ВЫТАЩИТЬ ИСХОД')
-        #             # Пробуем достать Двойной шанс
-        #             try:
-        #                 rows += get_dvoynoy_shans(game_info)
-        #             except:
-        #                 print('НЕ ПОЛУЧИЛОСЬ ВЫТАЩИТЬ ДВОЙНОЙ ШАНС')
-        #             # rows += get_total(game_info)
-        #             # rows += get_fora(game_info)
-        #
-        #             # Пробуем вставить полученные данные в базу
-        #             try:
-        #                 inserting_coeffs(set(rows))
-        #             except:
-        #                 print('Не полуилось вставить коэффициенты а базу')
-        #
-        #             # for row in rows:
-        #             #     print(row)
-        #
-        # # Подсчитываем время обхода чемпионатов
-        # end_time = dt.now()
-        # total_seconds = (end_time - start_time).total_seconds()
-        # print(total_seconds, 'секунд потрачено на чемпионат')
-        # if total_seconds < 360:
-        #     time.sleep(round(360 - total_seconds))
+                    # Пробуем достать Двойной шанс
+                    try:
+                        rows += get_dvoynoy_shans(game_info)
+                    except:
+                        print('НЕ ПОЛУЧИЛОСЬ ВЫТАЩИТЬ ДВОЙНОЙ ШАНС')
+                        continue
+
+                    # rows += get_total(game_info)
+                    # rows += get_fora(game_info)
+
+                    # Пробуем вставить полученные данные в базу
+                    try:
+                        inserting_coeffs(set(rows))
+                    except:
+                        print('Не полуилось вставить коэффициенты а базу')
+
+                    # for row in rows:
+                    #     print(row)
+
+        # Подсчитываем время обхода чемпионатов
+        end_time = dt.now()
+        total_seconds = (end_time - start_time).total_seconds()
+        print(total_seconds, 'секунд потрачено на чемпионат')
+        if total_seconds < 360:
+            time.sleep(round(360 - total_seconds))
 
 
 if __name__ == "__main__":
