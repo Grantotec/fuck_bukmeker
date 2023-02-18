@@ -15,6 +15,7 @@ def inserting_coeffs(values):
                        'league_id',
                        'league_nm',
                        'sport_nm',
+                       'tour',
                        'opponent_a',
                        'opponent_b',
                        'event_id',
