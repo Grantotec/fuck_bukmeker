@@ -11,7 +11,7 @@ def create_events():
 
 def create_coeffs():
     return """
-    CREATE TABLE IF NOT EXISTS game_coeffs (
+    CREATE TABLE IF NOT EXISTS coeffs (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       game_id INTEGER,
       time TEXT,

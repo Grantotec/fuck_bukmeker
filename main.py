@@ -117,7 +117,7 @@ def inserting_coeffs(values):
                        'opponent_b',
                        'event_id',
                        'coeff']
-            sql = f'INSERT INTO game_coeffs ({", ".join(columns)}) VALUES ({", ".join("?" * len(columns))})'
+            sql = f'INSERT INTO coeffs ({", ".join(columns)}) VALUES ({", ".join("?" * len(columns))})'
             c.executemany(sql, values)
             con.commit()
 
