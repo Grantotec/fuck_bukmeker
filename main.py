@@ -6,6 +6,103 @@ from sql_code import create_events, create_coeffs, insert_events
 from datetime import datetime as dt
 
 
+TOTALS_SIGN_MORE = {
+    '0': '7',
+    '0.5': '8',
+    '1': '9',
+    '1.5': '10',
+    '2': '11',
+    '2.5': '12',
+    '3': '13',
+    '3.5': '14',
+    '4': '15',
+    '4.5': '16',
+    '5': '17',
+    '5.5': '18',
+    '6': '19',
+    '6.5': '20',
+    '7': '21',
+    '7.5': '22',
+    '8': '23',
+    '8.5': '24',
+    '9': '25',
+    '9.5': '26',
+    '10': '27'
+}
+
+TOTALS_SIGN_LESS = {
+    '0': '45',
+    '0.5': '46',
+    '1': '47',
+    '1.5': '48',
+    '2': '49',
+    '2.5': '50',
+    '3': '51',
+    '3.5': '52',
+    '4': '53',
+    '4.5': '54',
+    '5': '55',
+    '5.5': '56',
+    '6': '57',
+    '6.5': '58',
+    '7': '59',
+    '7.5': '60',
+    '8': '61',
+    '8.5': '62',
+    '9': '63',
+    '9.5': '64',
+    '10': '65'
+}
+
+FORA_SIGN_FIRST = {
+    '5': '86',
+    '4.5': '87',
+    '4': '88',
+    '3.5': '89',
+    '3': '90',
+    '2.5': '91',
+    '2': '92',
+    '1.5': '93',
+    '1': '94',
+    '0.5': '95',
+    '0': '96',
+    '-0.5': '97',
+    '-1': '98',
+    '-1.5': '99',
+    '-2': '100',
+    '-2.5': '101',
+    '-3': '102',
+    '-3.5': '103',
+    '-4': '104',
+    '-4.5': '105',
+    '-5': '106'
+}
+
+FORA_SIGN_SECOND = {
+    '5': '107',
+    '4.5': '108',
+    '4': '109',
+    '3.5': '110',
+    '3': '111',
+    '2.5': '112',
+    '2': '113',
+    '1.5': '114',
+    '1': '115',
+    '0.5': '116',
+    '0': '117',
+    '-0.5': '118',
+    '-1': '119',
+    '-1.5': '120',
+    '-2': '121',
+    '-2.5': '122',
+    '-3': '123',
+    '-3.5': '124',
+    '-4': '125',
+    '-4.5': '126',
+    '-5': '127'
+}
+
+
 def inserting_coeffs(values):
     with closing(sqlite3.connect("database.db")) as con:
         with closing(con.cursor()) as c:
@@ -27,26 +124,26 @@ def inserting_coeffs(values):
 
 def get_fora(game):
     """
-    TODO дописать функцию
     Из данных по игре метод выделяет коэффициенты на группу событий Фора.
     Возвращает список уже готовых к заливке строк.
     :param game: Данные игры
     :return: Список строк для заливки
     """
-    pass
+    global FORA_SIGN_FIRST, FORA_SIGN_SECOND
 
-
-def get_total(game):
-    """
-    TODO дописать функцию
-    Из данных по игре метод выделяет коэффициенты на группу событий Тотал.
-    Возвращает список уже готовых к заливке строк.
-    :param game: Данные игры
-    :return: Список строк для заливки
-    """
     values = list()
-    coeffs = game['GE'][3]['E']
-    for total in coeffs:
+    coeffs = game['GE'][5]['E']
+    first = coeffs[0]
+    second = coeffs[1]
+
+    for fora in first:
+        if 'P' not in fora:
+            fora_sign = '0'
+        else:
+            fora_sign = str(fora['P'])
+
+        coeff_sign = int(FORA_SIGN_FIRST[fora_sign])
+
         value = (game['CI'],
                  dt.now().strftime('%Y-%m-%d %H:%M:%S.%f')[:-3],
                  game['CN'],
@@ -56,10 +153,98 @@ def get_total(game):
                  int(game['MIS'][0]['V'].split(' ')[1]),
                  game['O1'],
                  game['O2'],
-                 x + 4,
-                 coeffs[x][0]['C']
+                 coeff_sign,
+                 fora['C']
                  )
+
         values.append(value)
+
+    for fora in second:
+        if 'P' not in fora:
+            fora_sign = '0'
+        else:
+            fora_sign = str(fora['P'])
+
+        coeff_sign = int(FORA_SIGN_SECOND[fora_sign])
+
+        value = (game['CI'],
+                 dt.now().strftime('%Y-%m-%d %H:%M:%S.%f')[:-3],
+                 game['CN'],
+                 game['LI'],
+                 game['L'],
+                 game['SN'],
+                 int(game['MIS'][0]['V'].split(' ')[1]),
+                 game['O1'],
+                 game['O2'],
+                 coeff_sign,
+                 fora['C']
+                 )
+
+        values.append(value)
+
+    return values
+
+
+def get_total(game):
+    """
+    Из данных по игре метод выделяет коэффициенты на группу событий Тотал.
+    Возвращает список уже готовых к заливке строк.
+    :param game: Данные игры
+    :return: Список строк для заливки
+    """
+    global TOTALS_SIGN_MORE, TOTALS_SIGN_LESS
+
+    values = list()
+    coeffs = game['GE'][3]['E']
+    more = coeffs[0]
+    less = coeffs[1]
+
+    for total in more:
+        if 'P' not in total:
+            total_sign = '0'
+        else:
+            total_sign = str(total['P'])
+
+        coeff_sign = int(TOTALS_SIGN_MORE[total_sign])
+
+        value = (game['CI'],
+                 dt.now().strftime('%Y-%m-%d %H:%M:%S.%f')[:-3],
+                 game['CN'],
+                 game['LI'],
+                 game['L'],
+                 game['SN'],
+                 int(game['MIS'][0]['V'].split(' ')[1]),
+                 game['O1'],
+                 game['O2'],
+                 coeff_sign,
+                 total['C']
+                 )
+
+        values.append(value)
+
+    for total in less:
+        if 'P' not in total:
+            total_sign = '0'
+        else:
+            total_sign = str(total['P'])
+
+        coeff_sign = int(TOTALS_SIGN_LESS[total_sign])
+
+        value = (game['CI'],
+                 dt.now().strftime('%Y-%m-%d %H:%M:%S.%f')[:-3],
+                 game['CN'],
+                 game['LI'],
+                 game['L'],
+                 game['SN'],
+                 int(game['MIS'][0]['V'].split(' ')[1]),
+                 game['O1'],
+                 game['O2'],
+                 coeff_sign,
+                 total['C']
+                 )
+
+        values.append(value)
+
     return values
 
 
@@ -201,8 +386,9 @@ def main():
                 # Пробуем достать турнир
                 try:
                     champ_games = get_games(champ_id)
-                except:
-                    print('Не получилось достать турнир')
+                except Exception as e:
+                    print('НЕ ПОЛУЧИЛОСЬ ДОСТАТЬ ТУРНИР')
+                    print(e)
                     continue
                 # Обход игра внутри турнира
                 for game in champ_games:
@@ -215,35 +401,44 @@ def main():
                     # Пробуем достать игру
                     try:
                         game_info = get_game_info(game_id)
-                    except:
-                        print('Не получилось достать игру')
+                    except Exception as e:
+                        print('НЕ ПОЛУЧИЛОСЬ ДОСТАТЬ ИГРУ')
+                        print(e)
                         continue
 
                     # Пробуем достать Исход
                     try:
                         rows += get_isxod(game_info)
-                    except:
+                    except Exception as e:
                         print('НЕ ПОЛУЧИЛОСЬ ВЫТАЩИТЬ ИСХОД')
-                        continue
+                        print(e)
 
                     # Пробуем достать Двойной шанс
                     try:
                         rows += get_dvoynoy_shans(game_info)
-                    except:
+                    except Exception as e:
                         print('НЕ ПОЛУЧИЛОСЬ ВЫТАЩИТЬ ДВОЙНОЙ ШАНС')
-                        continue
+                        print(e)
 
-                    # rows += get_total(game_info)
-                    # rows += get_fora(game_info)
+                    # Пробуем достать Тотал
+                    try:
+                        rows += get_total(game_info)
+                    except Exception as e:
+                        print('НЕ ПОЛУЧИЛОСЬ ВЫТАЩИТЬ ТОТАЛ')
+                        print(e)
+
+                    try:
+                        rows += get_fora(game_info)
+                    except Exception as e:
+                        print('НЕ ПОЛУЧИЛОСЬ ВЫТАЩИТЬ ФОРУ')
+                        print(e)
 
                     # Пробуем вставить полученные данные в базу
                     try:
                         inserting_coeffs(set(rows))
-                    except:
-                        print('Не полуилось вставить коэффициенты а базу')
-
-                    # for row in rows:
-                    #     print(row)
+                    except Exception as e:
+                        print('НЕ ПОЛУЧИЛОСЬ ВСТАВИТЬ КОЭФФИЦИЕНТЫ В БАЗУ')
+                        print(e)
 
         # Подсчитываем время обхода чемпионатов
         end_time = dt.now()

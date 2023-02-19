@@ -12,8 +12,8 @@
     <loaded-nodes />
   </component>
   <component name="DBNavigator.Project.DatabaseConsoleManager">
-    <connection id="07fbfbec-09f3-4b0a-b284-2889c34c92b8">
-      <console name="Connection" type="STANDARD" schema="main" session="Pool"><![CDATA[select * from game_coeffs where cntry_nm='Италия']]></console>
+    <connection id="8372ba23-2bdc-4a5d-b59f-1f3590e96da2">
+      <console name="Connection 1" type="STANDARD" schema="main" session="Main" />
     </connection>
   </component>
   <component name="DBNavigator.Project.DatabaseEditorStateManager">
@@ -52,9 +52,9 @@
   </component>
   <component name="DBNavigator.Project.Settings">
     <connections>
-      <connection id="07fbfbec-09f3-4b0a-b284-2889c34c92b8" active="true" signed="true">
+      <connection id="8372ba23-2bdc-4a5d-b59f-1f3590e96da2" active="true" signed="true">
         <database>
-          <name value="Connection" />
+          <name value="Connection 1" />
           <description value="" />
           <database-type value="SQLITE" />
           <config-type value="BASIC" />
@@ -67,7 +67,7 @@
           <port value="" />
           <database value="" />
           <files>
-            <file path="C:\Users\Грант\PycharmProjects\fuck_bukmeker 2\fuck_bukmeker\database.db" schema="main" />
+            <file path="$PROJECT_DIR$/database.db" schema="main" />
           </files>
           <type value="NONE" />
           <user value="" />
