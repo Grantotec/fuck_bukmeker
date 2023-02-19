@@ -150,7 +150,7 @@ def get_fora(game):
                  game['LI'],
                  game['L'],
                  game['SN'],
-                 int(game['MIS'][0]['V'].split(' ')[1]),
+                 game['MIS'][0]['V'].split(' ')[1],
                  game['O1'],
                  game['O2'],
                  coeff_sign,
@@ -173,7 +173,7 @@ def get_fora(game):
                  game['LI'],
                  game['L'],
                  game['SN'],
-                 int(game['MIS'][0]['V'].split(' ')[1]),
+                 game['MIS'][0]['V'].split(' ')[1],
                  game['O1'],
                  game['O2'],
                  coeff_sign,
@@ -213,7 +213,7 @@ def get_total(game):
                  game['LI'],
                  game['L'],
                  game['SN'],
-                 int(game['MIS'][0]['V'].split(' ')[1]),
+                 game['MIS'][0]['V'].split(' ')[1],
                  game['O1'],
                  game['O2'],
                  coeff_sign,
@@ -236,7 +236,7 @@ def get_total(game):
                  game['LI'],
                  game['L'],
                  game['SN'],
-                 int(game['MIS'][0]['V'].split(' ')[1]),
+                 game['MIS'][0]['V'],
                  game['O1'],
                  game['O2'],
                  coeff_sign,
@@ -264,7 +264,7 @@ def get_dvoynoy_shans(game):
                  game['LI'],
                  game['L'],
                  game['SN'],
-                 int(game['MIS'][0]['V'].split(' ')[1]),
+                 game['MIS'][0]['V'].split(' ')[1],
                  game['O1'],
                  game['O2'],
                  x + 4,
@@ -290,7 +290,7 @@ def get_isxod(game):
                  game['LI'],
                  game['L'],
                  game['SN'],
-                 int(game['MIS'][0]['V'].split(' ')[1]),
+                 game['MIS'][0]['V'].split(' ')[1],
                  game['O1'],
                  game['O2'],
                  x + 1,
@@ -404,6 +404,7 @@ def main():
                     except Exception as e:
                         print('НЕ ПОЛУЧИЛОСЬ ДОСТАТЬ ИГРУ')
                         print(e)
+                        print(game_info)
                         continue
 
                     # Пробуем достать Исход
@@ -412,6 +413,7 @@ def main():
                     except Exception as e:
                         print('НЕ ПОЛУЧИЛОСЬ ВЫТАЩИТЬ ИСХОД')
                         print(e)
+                        print(game_info)
 
                     # Пробуем достать Двойной шанс
                     try:
@@ -419,6 +421,7 @@ def main():
                     except Exception as e:
                         print('НЕ ПОЛУЧИЛОСЬ ВЫТАЩИТЬ ДВОЙНОЙ ШАНС')
                         print(e)
+                        print(game_info)
 
                     # Пробуем достать Тотал
                     try:
@@ -426,12 +429,14 @@ def main():
                     except Exception as e:
                         print('НЕ ПОЛУЧИЛОСЬ ВЫТАЩИТЬ ТОТАЛ')
                         print(e)
+                        print(game_info)
 
                     try:
                         rows += get_fora(game_info)
                     except Exception as e:
                         print('НЕ ПОЛУЧИЛОСЬ ВЫТАЩИТЬ ФОРУ')
                         print(e)
+                        print(game_info)
 
                     # Пробуем вставить полученные данные в базу
                     try:
