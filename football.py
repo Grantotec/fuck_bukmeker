@@ -1,5 +1,5 @@
-import sqlite3
 import time
+import sqlite3
 import requests
 from contextlib import closing
 from sql_code import create_events, create_coeffs, insert_events
@@ -120,6 +120,17 @@ def inserting_coeffs(values):
             sql = f'INSERT INTO coeffs ({", ".join(columns)}) VALUES ({", ".join("?" * len(columns))})'
             c.executemany(sql, values)
             con.commit()
+
+
+def get_total_ugl(game):
+    """
+    Из данных по игре метод выделяет коэффициенты на группу событий Тотал Угловых.
+    Возвращает список уже готовых к заливке строк.
+    :param game:
+    :return:
+    """
+
+    pass
 
 
 def get_fora(game):
@@ -347,7 +358,7 @@ def get_games(champ_id):
         'mode': '4',
         'country': '1',
         'partner': '51',
-        'getEmpty': 'true'
+        'getEmpty': 'getEmpty'
     }
     return requests.get(url, params=params).json()['Value']
 
@@ -359,7 +370,7 @@ def create_tables():
     нужно поправить sql-code.py
     :return: None
     """
-    with closing(sqlite3.connect("database.db")) as con:
+    with closing(sqlite3.connect("football.db")) as con:
         with closing(con.cursor()) as c:
             sql = create_events()
             c.execute(sql)
@@ -438,12 +449,20 @@ def main():
                         print(e)
                         print(game_info)
 
+                    try:
+                        rows += get_total_ugl(game_info)
+                    except Exception as e:
+                        print('НЕ ПОЛУЧИЛОСЬ ВЫТАЩИТЬ ТОТАЛ УГЛОВЫХ')
+                        print(e)
+                        print(game_info)
+
                     # Пробуем вставить полученные данные в базу
                     try:
                         inserting_coeffs(set(rows))
                     except Exception as e:
                         print('НЕ ПОЛУЧИЛОСЬ ВСТАВИТЬ КОЭФФИЦИЕНТЫ В БАЗУ')
                         print(e)
+                        print(game_info)
 
         # Подсчитываем время обхода чемпионатов
         end_time = dt.now()

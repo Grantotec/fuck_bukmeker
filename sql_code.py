@@ -160,3 +160,23 @@ def insert_events():
     ('Фора', '-4.5', '2'),
     ('Фора', '-5', '2')
     """
+
+
+def create_tennis_coeffs():
+    return """
+    CREATE TABLE IF NOT EXISTS coeffs (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      game_id INTEGER,
+      time TEXT,
+      cntry_nm TEXT,
+      league_id INTEGER,
+      league_nm TEXT,
+      sport_nm TEXT,
+      tour TEXT,
+      opponent_a TEXT,
+      opponent_b TEXT,
+      event_nm TEXT,
+      event_vl TEXT,
+      coeff REAL
+    )
+    """
