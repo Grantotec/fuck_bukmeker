@@ -254,11 +254,6 @@ def create_tables():
         with closing(con.cursor()) as c:
             sql = create_football_coeffs()
             c.execute(sql)
-            # c.execute('SELECT event_id FROM events LIMIT 1')
-            # if c.fetchone() is None:
-            #     sql = insert_events()
-            #     c.execute(sql)
-            #     con.commit()
 
 
 def main():
