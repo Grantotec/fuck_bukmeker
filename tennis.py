@@ -9,12 +9,9 @@ from datetime import datetime as dt
 def inserting_coeffs(values):
     with closing(sqlite3.connect("tennis.db")) as con:
         with closing(con.cursor()) as c:
-            columns = ['game_id',
-                       'time',
+            columns = ['time',
                        'cntry_nm',
-                       'league_id',
                        'league_nm',
-                       'sport_nm',
                        'tour',
                        'opponent_a',
                        'opponent_b',
