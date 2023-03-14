@@ -276,7 +276,10 @@ def main():
                     continue
                 # Обход игра внутри турнира
                 for game in champ_games:
-                    if 'Хозяева' in game['O1'] or 'Гости' in game['O2']:
+                    if 'O1' in game and 'O2' in game:
+                        if 'Хозяева' in game['O1'] or 'Гости' in game['O2']:
+                            continue
+                    else:
                         continue
 
                     game_id = game['CI']
