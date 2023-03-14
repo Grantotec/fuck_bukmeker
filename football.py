@@ -79,44 +79,6 @@ def get_coeffs(game):
                      )
             values.append(value)
 
-        if coeff['G'] == 2:
-            # Вытаскиваем Двойной шанс
-            value = (record_time,
-                     cntry_nm,
-                     league_nm,
-                     tour,
-                     opponent_a,
-                     opponent_b,
-                     'ДШ',
-                     '1x',
-                     coeff['E'][0][0]['C']
-                     )
-            values.append(value)
-
-            value = (record_time,
-                     cntry_nm,
-                     league_nm,
-                     tour,
-                     opponent_a,
-                     opponent_b,
-                     'ДШ',
-                     '12',
-                     coeff['E'][1][0]['C']
-                     )
-            values.append(value)
-
-            value = (record_time,
-                     cntry_nm,
-                     league_nm,
-                     tour,
-                     opponent_a,
-                     opponent_b,
-                     'ДШ',
-                     '2x',
-                     coeff['E'][2][0]['C']
-                     )
-            values.append(value)
-
         if coeff['G'] == 3:
             # Вытаскиваем Фора
             first = coeff['E'][0]
