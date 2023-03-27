@@ -12,8 +12,8 @@
     <loaded-nodes />
   </component>
   <component name="DBNavigator.Project.DatabaseConsoleManager">
-    <connection id="8372ba23-2bdc-4a5d-b59f-1f3590e96da2">
-      <console name="Connection 1" type="STANDARD" schema="main" session="Main" />
+    <connection id="b209bd76-772b-4ed1-8de9-6a8e750612e7">
+      <console name="Connection" type="STANDARD" schema="main" session="Session 1"><![CDATA[select distinct league_nm, tour from coeffs]]></console>
     </connection>
   </component>
   <component name="DBNavigator.Project.DatabaseEditorStateManager">
@@ -23,8 +23,8 @@
     <open-files />
   </component>
   <component name="DBNavigator.Project.DatabaseSessionManager">
-    <connection id="520aae21-b1cb-4327-ad89-7235e98201cb">
-      <session name="Session 1" id="37c59b71-ae3e-425f-baa8-a04b2c03bae7" />
+    <connection id="b209bd76-772b-4ed1-8de9-6a8e750612e7">
+      <session name="Session 1" id="f893aebb-b6c3-4205-a192-b723e6786498" />
     </connection>
   </component>
   <component name="DBNavigator.Project.DatasetFilterManager">
@@ -52,9 +52,9 @@
   </component>
   <component name="DBNavigator.Project.Settings">
     <connections>
-      <connection id="8372ba23-2bdc-4a5d-b59f-1f3590e96da2" active="true" signed="true">
+      <connection id="b209bd76-772b-4ed1-8de9-6a8e750612e7" active="true" signed="true">
         <database>
-          <name value="Connection 1" />
+          <name value="Connection" />
           <description value="" />
           <database-type value="SQLITE" />
           <config-type value="BASIC" />
@@ -67,7 +67,7 @@
           <port value="" />
           <database value="" />
           <files>
-            <file path="$PROJECT_DIR$/database.db" schema="main" />
+            <file path="C:\Users\Администратор\PycharmProjects\fuck_bukmeker\football.db" schema="main" />
           </files>
           <type value="NONE" />
           <user value="" />
