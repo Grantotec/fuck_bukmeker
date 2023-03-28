@@ -35,7 +35,14 @@ def get_coeffs(game):
     record_time = dt.now().strftime('%Y-%m-%d %H:%M:%S.%f')[:-3]
     cntry_nm = game['CN']
     league_nm = game['L']
-    tour = game['MIS'][0]['V']
+
+    tour = None
+    for mis in game['MIS']:
+        if mis['K'] == 1:
+            tour = mis['V']
+    if not tour:
+        tour = 'None'
+
     opponent_a = game['O1']
     opponent_b = game['O2']
     coeffs = game['GE']
