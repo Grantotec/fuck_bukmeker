@@ -9,7 +9,8 @@ from datetime import datetime as dt
 def inserting_coeffs(values):
     with closing(sqlite3.connect("football.db")) as con:
         with closing(con.cursor()) as c:
-            columns = ['time',
+            columns = ['game_id',
+                       'time',
                        'cntry_nm',
                        'league_nm',
                        'tour',
@@ -32,6 +33,7 @@ def get_coeffs(game):
     :return: Список строк для заливки
     """
     values = list()
+    game_id = str(game['CI'])
     record_time = dt.now().strftime('%Y-%m-%d %H:%M:%S.%f')[:-3]
     cntry_nm = game['CN']
     league_nm = game['L']
@@ -50,7 +52,8 @@ def get_coeffs(game):
     for coeff in coeffs:
         if coeff['G'] == 1:
             # Вытаскиваем исход
-            value = (record_time,
+            value = (game_id,
+                     record_time,
                      cntry_nm,
                      league_nm,
                      tour,
@@ -62,7 +65,8 @@ def get_coeffs(game):
                      )
             values.append(value)
 
-            value = (record_time,
+            value = (game_id,
+                     record_time,
                      cntry_nm,
                      league_nm,
                      tour,
@@ -74,7 +78,8 @@ def get_coeffs(game):
                      )
             values.append(value)
 
-            value = (record_time,
+            value = (game_id,
+                     record_time,
                      cntry_nm,
                      league_nm,
                      tour,
@@ -94,7 +99,8 @@ def get_coeffs(game):
             for fora in first:
                 fora_sign = fora['P'] if 'P' in fora else 0
 
-                value = (record_time,
+                value = (game_id,
+                         record_time,
                          cntry_nm,
                          league_nm,
                          tour,
@@ -109,7 +115,8 @@ def get_coeffs(game):
             for fora in second:
                 fora_sign = fora['P'] if 'P' in fora else 0
 
-                value = (record_time,
+                value = (game_id,
+                         record_time,
                          cntry_nm,
                          league_nm,
                          tour,
@@ -129,7 +136,8 @@ def get_coeffs(game):
             for total in more:
                 total_sign = total['P'] if 'P' in total else 0
 
-                value = (record_time,
+                value = (game_id,
+                         record_time,
                          cntry_nm,
                          league_nm,
                          tour,
@@ -144,7 +152,8 @@ def get_coeffs(game):
             for total in less:
                 total_sign = total['P'] if 'P' in total else 0
 
-                value = (record_time,
+                value = (game_id,
+                         record_time,
                          cntry_nm,
                          league_nm,
                          tour,

@@ -13,6 +13,7 @@ def create_football_coeffs():
     return """
     CREATE TABLE IF NOT EXISTS coeffs (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
+      game_id TEXT,
       time TEXT,
       cntry_nm TEXT,
       league_nm TEXT,
